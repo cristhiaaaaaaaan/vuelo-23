@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feliz Cumpleaños, Vale</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="theme-color" content="#1a0715">
+<meta name="description" content="Vuelo 23 · Pasajera: Vale. Toca para abrir.">
+<!-- vista previa al compartir el link (WhatsApp, etc.) -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://cristhiaaaaaaaan.github.io/vuelo-23/">
+<meta property="og:title" content="Tienes un regalo">
+<meta property="og:description" content="Vuelo 23 · Pasajera: Vale. Toca para abrir.">
+<meta property="og:image" content="https://cristhiaaaaaaaan.github.io/vuelo-23/preview.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ---------- sistema: un solo set de colores, sombras y curvas para todo ---------- */
+:root{
+  --pink:#ff5c9d; --pink-deep:#d6237a; --pink-soft:#ff8fc4; --pink-light:#ffb3d1;
+  --text:#fff0f7; --text-2:#ffd9e8;
+  --shade:0 1px 3px rgba(20,3,14,.85),0 4px 20px rgba(20,3,14,.75);
+  --shade-filter:drop-shadow(0 1px 3px rgba(20,3,14,.85)) drop-shadow(0 4px 20px rgba(20,3,14,.75));
+  --glow:drop-shadow(0 0 8px rgba(255,92,157,.7));
+  --ease-in:cubic-bezier(.2,.9,.2,1);   /* entradas: arranca rápido y se asienta suave */
+  --ease-move:cubic-bezier(.4,0,.2,1);  /* desplazamientos */
+  --dur:600ms;
+}
+html,body{margin:0;padding:0;background:#1a0715;font-family:'Inter',system-ui,sans-serif;color:#fff;overflow:hidden;height:100%;width:100%;user-select:none}
+*{box-sizing:border-box}
+button{font-family:inherit}
+[hidden]{display:none!important}
+
+.root{position:fixed;inset:0;width:100vw;height:100vh;overflow:hidden}
+
+/* ---------- fondo ---------- */
+.bokeh-bg{position:fixed;inset:0;overflow:hidden;background:#1a0715}
+.bokeh-bg img{position:absolute;top:50%;left:50%;width:115%;height:115%;object-fit:cover;transform:translate(-50%,-50%);will-change:transform;opacity:0;transition:opacity .8s ease}
+.bokeh-bg img.loaded{opacity:1}
+.bg-grad{position:absolute;inset:0;opacity:.55;background:radial-gradient(ellipse at 50% 28%,#4a1130 0%,#2a0a20 46%,#12040f 100%)}
+.blob{position:absolute;border-radius:50%;filter:blur(70px)}
+.blob1{top:-14%;right:-10%;width:55%;aspect-ratio:1;background:radial-gradient(circle,rgba(255,92,157,.34) 0%,transparent 65%)}
+.blob2{bottom:-18%;left:-12%;width:58%;aspect-ratio:1;background:radial-gradient(circle,rgba(214,35,122,.28) 0%,transparent 65%)}
+.stars,.flora-layer,.flyby-layer{position:absolute;inset:0;pointer-events:none}
+.flyby-layer{z-index:1;overflow:hidden}
+.flora-layer{z-index:2}
+.star{position:absolute;border-radius:50%}
+.contrail{width:140px;height:3px;border-radius:3px;background:linear-gradient(90deg,rgba(255,179,209,0) 0%,rgba(255,179,209,.75) 100%)}
+.flyby-item{position:absolute;display:flex;align-items:center}
+
+/* ---------- grano / viñeta / letterbox: la capa "cine" ---------- */
+.vignette{position:fixed;inset:0;z-index:40;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 45%,rgba(0,0,0,.55) 100%)}
+.grain{position:fixed;inset:-50%;width:200%;height:200%;z-index:41;pointer-events:none;opacity:.05;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  animation:grainShift 1s steps(4) infinite}
+@keyframes grainShift{0%{transform:translate(0,0)}25%{transform:translate(-2%,1%)}50%{transform:translate(1%,-2%)}75%{transform:translate(-1%,2%)}100%{transform:translate(0,0)}}
+.grain.flash{opacity:.14;transition:opacity .08s ease}
+.letterbox{position:fixed;left:0;right:0;height:0;background:#000;z-index:45;pointer-events:none;transition:height 1s cubic-bezier(.4,0,.2,1)}
+.letterbox-top{top:0}
+.letterbox-bottom{bottom:0}
+.letterbox.show{height:11vh}
+
+/* ---------- capas de etapa ---------- */
+.stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:5;
+  opacity:0;animation:vFadeIn var(--dur) var(--ease-in) forwards}
+.kicker-sm{font-family:'Space Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.3em;text-transform:uppercase;margin-bottom:28px;color:var(--pink-soft);font-weight:700}
+.pulse-ring{width:96px;height:96px;border-radius:50%;background:rgba(255,92,157,.12);border:1.5px solid rgba(255,92,157,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 26px;animation:vPulse 1.6s ease-in-out infinite}
+.intro-text{font-family:'Space Mono',ui-monospace,monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-2);opacity:.9;animation:vFadeIn 1s .4s var(--ease-in) both}
+
+.gift-head{text-align:center;margin-bottom:34px}
+.gift-title{font-family:'Anton','Bebas Neue',Impact,sans-serif;font-size:clamp(28px,4.5vw,52px);line-height:1.15;color:var(--pink-soft);text-shadow:var(--shade);white-space:nowrap}
+.gift-sub{font-family:'Space Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.24em;text-transform:uppercase;margin-top:18px;color:var(--text-2);opacity:.9}
+.gift-btn{background:transparent;border:none;padding:16px;cursor:pointer;transition:transform 300ms cubic-bezier(.2,.9,.2,1.1),opacity 300ms ease;position:relative;z-index:2}
+.gift-btn.diving{pointer-events:none}
+.gift-btn.hidden-fx{opacity:0}
+.gift-glow{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,92,157,.25) 0%,transparent 70%);animation:vGiftPulse 2s ease-out infinite;pointer-events:none;z-index:1;left:50%;top:50%;transform:translate(-50%,-50%)}
+
+.giftbox{position:relative;width:220px;height:220px}
+.giftbox.wiggle{animation:vWiggle .6s ease-in-out infinite}
+.gb-base{position:absolute;bottom:0;left:10%;right:10%;height:65%;background:linear-gradient(145deg,#ff5c9d 0%,#d6237a 100%);border-radius:10px;border:2px solid rgba(255,217,232,.7);box-shadow:0 20px 50px rgba(214,35,122,.45),0 0 30px rgba(255,92,157,.25),inset 0 -8px 0 rgba(0,0,0,.14)}
+.giftbox.opening .gb-base{animation:vBoxBurst 1.2s ease-out forwards}
+.gb-ribbon{position:absolute;top:0;left:50%;transform:translateX(-50%);width:17%;height:100%;background:linear-gradient(180deg,#fff0f7 0%,#ffd9e8 100%)}
+.gb-labels{position:absolute;bottom:11%;left:0;right:0;display:flex;justify-content:space-between;padding:0 12px}
+.gb-labels span{font-family:'Anton',Impact,sans-serif;font-size:15px;letter-spacing:2px;color:#fff0f7;text-shadow:0 2px 6px rgba(120,10,60,.9)}
+.gb-lid{position:absolute;top:20%;left:5%;right:5%;height:22%;background:linear-gradient(145deg,#ff79b0 0%,#ff5c9d 100%);border-radius:10px;border:2px solid rgba(255,217,232,.7);box-shadow:0 8px 20px rgba(214,35,122,.4)}
+.giftbox.opening .gb-lid{animation:vLidOff 1s cubic-bezier(.4,0,.2,1) forwards}
+.gb-bow{position:absolute;top:-2%;left:50%;transform:translateX(-50%);width:62%;height:32%;display:flex;align-items:center;justify-content:center}
+.giftbox.opening .gb-bow{animation:vLidOff 1s cubic-bezier(.4,0,.2,1) forwards}
+.gb-preview{position:absolute;top:24%;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;opacity:0}
+.gb-preview.show{animation:vFadeInUp var(--dur) .3s var(--ease-in) both}
+
+.dive-stage{position:fixed;inset:0;z-index:12;pointer-events:none;perspective:900px;perspective-origin:50% 50%;display:flex;align-items:center;justify-content:center}
+.lily-bg{position:fixed;inset:0;z-index:4;pointer-events:none;display:flex;align-items:center;justify-content:center}
+.lily-particles-bg{position:fixed;inset:0;z-index:4;pointer-events:none}
+.lily-bg svg{width:min(52vw,440px);height:min(52vw,440px);opacity:.72;filter:brightness(1.08) drop-shadow(0 0 10px rgba(255,246,250,.45)) drop-shadow(0 0 34px rgba(255,92,157,.6)) drop-shadow(0 0 70px rgba(255,143,196,.34))}
+/* halo suave que respira detrás del lirio (queda debajo del velo del texto) */
+.lily-bg::before{content:'';position:absolute;left:50%;top:50%;width:min(80vw,680px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;z-index:-1;pointer-events:none;
+  background:radial-gradient(circle,rgba(255,244,249,.30) 0%,rgba(255,170,210,.20) 26%,rgba(255,92,157,.10) 46%,rgba(255,92,157,0) 68%);animation:vLilyHaloIn 2.4s ease-out both,vLilyGlow 5s 2.4s ease-in-out infinite}
+@keyframes vLilyHaloIn{from{opacity:0}to{opacity:.55}}
+@keyframes vLilyGlow{0%,100%{opacity:.55}50%{opacity:1}}
+.lily-svg-spin{animation:vLilySpin 100s linear infinite}
+@keyframes vLilySpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.lily-petal{transform-box:view-box;transform-origin:0px 0px;animation:vLilyBloom 2s cubic-bezier(.3,1.5,.4,1) both}
+@keyframes vLilyBloom{0%{transform:scale(.08) rotate(-10deg);opacity:0}22%{opacity:1}72%{transform:scale(1.06) rotate(1deg)}100%{transform:scale(1) rotate(0)}}
+.dive-flyer{position:absolute;transform-style:preserve-3d;animation:vDive 1.4s cubic-bezier(.5,.05,.75,.4) forwards;display:flex;align-items:center;filter:drop-shadow(0 12px 26px rgba(214,35,122,.55))}
+.dive-trail{width:260px;height:5px;border-radius:5px;background:linear-gradient(90deg,rgba(255,179,209,0) 0%,rgba(255,240,247,.85) 100%);animation:vDiveTrail 1.4s ease-out forwards}
+
+.burst-layer{position:fixed;inset:0;z-index:20;pointer-events:none;overflow:hidden}
+.burst-flash{position:absolute;inset:0;background:#fff4fa;animation:vFlash .62s ease-out forwards}
+.burst-lines{position:absolute;inset:0;width:100%;height:100%;animation:vBurstIn .62s ease-out forwards;mix-blend-mode:screen}
+
+.confetti-layer{position:fixed;inset:0;z-index:10;pointer-events:none}
+.confetti-piece{position:absolute;top:50%}
+
+/* si el mensaje final no cabe en pantallas chicas, se puede hacer scroll en vez de cortarse */
+#stageMessage{overflow-y:auto;justify-content:safe center}
+.msg-wrap{width:100%;max-width:780px;text-align:center;color:#fff;padding:0 24px;position:relative;isolation:isolate}
+/* velo oscuro detrás del texto para que no se pierda sobre el lirio y el bokeh */
+.msg-wrap::before{content:'';position:absolute;left:50%;top:50%;width:135%;height:130%;transform:translate(-50%,-50%);z-index:-1;pointer-events:none;
+  background:radial-gradient(ellipse at center,rgba(18,3,13,.66) 0%,rgba(18,3,13,.42) 42%,rgba(18,3,13,0) 72%)}
+.msg-inner{animation:vFadeInUp var(--dur) var(--ease-in) both}
+/* progreso como ruta de vuelo: el avión avanza un tramo por mensaje hasta la fresa */
+.route{position:relative;width:min(300px,68%);height:28px;margin:0 auto 34px}
+.route-track{position:absolute;left:0;right:0;top:50%;border-top:1.5px dashed rgba(255,217,232,.28)}
+.route-fill{position:absolute;left:0;top:calc(50% - 1px);width:0;height:2px;border-radius:2px;background:linear-gradient(90deg,rgba(255,92,157,0),var(--pink));transition:width .9s var(--ease-move)}
+.route-plane{position:absolute;left:0;top:50%;display:flex;transform:translate(-50%,-50%);transition:left .9s var(--ease-move);filter:var(--glow)}
+.route-end{position:absolute;right:-30px;top:50%;display:flex;transform:translateY(-50%);opacity:.5;transition:opacity var(--dur) var(--ease-move) .6s,filter var(--dur) var(--ease-move) .6s}
+.route-end.arrived{opacity:1;filter:var(--glow)}
+.msg-big{font-family:'Playfair Display',Georgia,serif;font-weight:400;font-size:clamp(30px,5.4vw,72px);line-height:1.12;margin:0;color:#fff;letter-spacing:-.02em;text-shadow:var(--shade);white-space:pre-line}
+.msg-big em{font-style:italic;color:var(--pink-light)}
+.msg-big.final{background:linear-gradient(120deg,var(--pink),var(--pink-light) 55%,var(--text));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:none;filter:var(--shade-filter)}
+.msg-small{font-family:'Playfair Display',Georgia,serif;font-size:clamp(17px,1.9vw,21px);margin-top:28px;color:var(--text);max-width:32em;margin-left:auto;margin-right:auto;line-height:1.7;text-shadow:var(--shade)}
+.verse-line{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:clamp(15px,1.8vw,18px);margin-top:20px;color:var(--text-2);max-width:520px;margin-left:auto;margin-right:auto;line-height:1.5;letter-spacing:.01em;text-shadow:var(--shade)}
+.next-btn{margin-top:46px;padding:14px 30px;background:linear-gradient(120deg,var(--pink),var(--pink-deep));color:#fff;border:none;border-radius:100px;font-size:15px;font-weight:700;letter-spacing:.04em;cursor:pointer;display:inline-flex;align-items:center;gap:12px;box-shadow:0 10px 30px rgba(255,92,157,.35)}
+.final-row{margin-top:40px;display:flex;flex-direction:column;align-items:center;gap:22px}
+.restart-btn{padding:10px 20px;background:rgba(255,255,255,.06);color:var(--text-2);border:1px solid rgba(255,92,157,.35);border-radius:100px;font-size:13px;font-weight:600;letter-spacing:.04em;cursor:pointer;display:inline-flex;align-items:center;gap:8px;backdrop-filter:blur(8px)}
+.credit-line{margin-top:10px;font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:12px;color:rgba(255,217,232,.35)}
+
+/* ---------- pase de embarque ---------- */
+.pass{display:flex;width:min(100%,560px);margin:0 auto;text-align:left;animation:vFadeInUp var(--dur) .3s var(--ease-in) both}
+.pass-main,.pass-stub{background:linear-gradient(150deg,rgba(255,240,247,.15),rgba(255,240,247,.06));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,143,196,.28)}
+/* muescas en el corte entre cuerpo y talón */
+.pass-main{flex:1;min-width:0;padding:18px 22px;border-radius:14px 0 0 14px;
+  -webkit-mask:radial-gradient(circle at 100% 0,transparent 11px,#000 11.5px) top/100% 51% no-repeat,radial-gradient(circle at 100% 100%,transparent 11px,#000 11.5px) bottom/100% 51% no-repeat;
+  mask:radial-gradient(circle at 100% 0,transparent 11px,#000 11.5px) top/100% 51% no-repeat,radial-gradient(circle at 100% 100%,transparent 11px,#000 11.5px) bottom/100% 51% no-repeat}
+.pass-stub{flex:none;width:136px;padding:18px 16px;border-radius:0 14px 14px 0;border-left:1.5px dashed rgba(255,143,196,.5);display:flex;flex-direction:column;justify-content:space-between;gap:10px;
+  -webkit-mask:radial-gradient(circle at 0 0,transparent 11px,#000 11.5px) top/100% 51% no-repeat,radial-gradient(circle at 0 100%,transparent 11px,#000 11.5px) bottom/100% 51% no-repeat;
+  mask:radial-gradient(circle at 0 0,transparent 11px,#000 11.5px) top/100% 51% no-repeat,radial-gradient(circle at 0 100%,transparent 11px,#000 11.5px) bottom/100% 51% no-repeat}
+.pass-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding-bottom:12px;border-bottom:1px solid rgba(255,143,196,.2)}
+.pass-brand{font-family:'Anton',Impact,sans-serif;font-size:14px;letter-spacing:.12em;color:var(--text)}
+.pass-kind,.pass-label{font-family:'Space Mono',ui-monospace,monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,217,232,.55)}
+.pass-route{display:flex;align-items:center;gap:14px;padding:16px 0 14px}
+.pass-end{display:flex;flex-direction:column;gap:2px}
+.pass-code{font-family:'Anton',Impact,sans-serif;font-size:30px;line-height:1;letter-spacing:.04em;color:var(--pink-soft)}
+.pass-grid{display:grid;grid-template-columns:repeat(4,auto);justify-content:space-between;gap:10px 14px;padding-top:12px;border-top:1px solid rgba(255,143,196,.2)}
+.pass-field{display:flex;flex-direction:column;gap:3px}
+.pass-value{font-family:'Anton',Impact,sans-serif;font-size:16px;letter-spacing:.06em;color:var(--text)}
+.pass-barcode{display:block;width:100%;height:38px}
+@media (max-width:520px){
+  .pass-main{padding:14px 14px}
+  .pass-stub{width:98px;padding:14px 11px}
+  .pass-code{font-size:19px}
+  .pass-grid{grid-template-columns:repeat(2,auto)}
+  .pass-kind{display:none}
+}
+
+/* ---------- animaciones ---------- */
+@keyframes vFadeIn{from{opacity:0}to{opacity:1}}
+@keyframes vPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,92,157,.5)}50%{transform:scale(1.08);box-shadow:0 0 0 24px rgba(255,92,157,0)}}
+@keyframes vFloat{0%,100%{transform:translateY(0) rotate(0);opacity:.35}50%{transform:translateY(-26px) rotate(8deg);opacity:.85}}
+@keyframes vGiftPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,92,157,.45)}50%{box-shadow:0 0 0 40px rgba(255,92,157,0)}}
+@keyframes vFadeInUp{from{opacity:0;transform:translateY(40px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes vWiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+@keyframes vLidOff{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(-220px) rotate(18deg);opacity:0}}
+@keyframes vBoxBurst{0%{transform:scale(1)}50%{transform:scale(1.15)}100%{transform:scale(0) translateY(40px);opacity:0}}
+@keyframes vShake{0%{transform:translate(0,0)}10%{transform:translate(-9px,5px)}25%{transform:translate(8px,-7px)}40%{transform:translate(-10px,2px)}55%{transform:translate(7px,5px)}70%{transform:translate(-5px,-4px)}85%{transform:translate(3px,2px)}100%{transform:translate(0,0)}}
+@keyframes vBurstIn{0%{opacity:0;transform:scale(.4) rotate(0)}18%{opacity:1;transform:scale(1.05) rotate(6deg)}55%{opacity:.85;transform:scale(1.25) rotate(10deg)}100%{opacity:0;transform:scale(1.8) rotate(16deg)}}
+@keyframes vFlash{0%{opacity:0}10%{opacity:.85}30%{opacity:.15}45%{opacity:.6}100%{opacity:0}}
+@keyframes vFly{0%{transform:translateX(-18vw) translateY(0)}100%{transform:translateX(118vw) translateY(0)}}
+@keyframes vDrift{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+@keyframes vDiveTrail{0%{opacity:0}20%{opacity:.8}100%{opacity:0}}
+/* la caída ahora frena antes del impacto (slow-motion) para que se sienta el peso */
+@keyframes vDive{
+  0%{transform:translate3d(46vw,-40vh,-2600px) rotateY(-38deg) rotateZ(24deg) rotateX(12deg);opacity:0}
+  12%{opacity:1}
+  40%{transform:translate3d(16vw,-13vh,-900px) rotateY(-22deg) rotateZ(-14deg) rotateX(6deg);opacity:1}
+  68%{transform:translate3d(5vw,-5vh,-320px) rotateY(-10deg) rotateZ(6deg) rotateX(3deg);opacity:1}
+  84%{transform:translate3d(1vw,0vh,-40px) rotateY(-3deg) rotateZ(2deg) rotateX(-4deg);opacity:1}
+  93%{transform:translate3d(0,2vh,60px) rotateY(0deg) rotateZ(0deg) rotateX(-16deg) scale(.5);opacity:.9}
+  100%{transform:translate3d(0,4vh,90px) rotateX(-26deg) scale(.16);opacity:0}
+}
+</style>
+</head>
+<body>
+
+<div class="root" id="stageRoot">
+  <div class="bokeh-bg"><img id="bokehImg" alt=""></div>
+  <div class="bg-grad"></div>
+  <div class="blob blob1" id="blob1"></div>
+  <div class="blob blob2" id="blob2"></div>
+  <div class="stars" id="stars"></div>
+  <div class="flyby-layer" id="flybyLayer"></div>
+  <div class="flora-layer" id="floraLayer"></div>
+
+  <div class="letterbox letterbox-top" id="letterTop"></div>
+  <div class="letterbox letterbox-bottom" id="letterBottom"></div>
+  <div class="grain" id="grain"></div>
+  <div class="vignette"></div>
+
+  <div class="stage" id="stageIntro">
+    <div style="text-align:center">
+      <div class="kicker-sm">Para Vale</div>
+      <div class="pulse-ring" id="pulseRing"></div>
+      <div class="intro-text">preparando tu vuelo...</div>
+    </div>
+  </div>
+
+  <div class="stage" id="stageGift" hidden>
+    <div class="gift-head" id="giftHead">
+      <div class="gift-title" id="giftTitle">tienes un regalo</div>
+      <div class="gift-sub" id="giftSub">toca para abrir</div>
+    </div>
+    <button class="gift-btn" id="giftBtn">
+      <div class="gift-glow" id="giftGlow"></div>
+      <div class="giftbox" id="giftBox">
+        <div class="gb-base">
+          <div class="gb-ribbon"></div>
+          <div class="gb-labels"><span>VUELO</span><span>23</span></div>
+        </div>
+        <div class="gb-lid"><div class="gb-ribbon"></div></div>
+        <div class="gb-bow" id="gbBow"></div>
+        <div class="gb-preview" id="gbPreview"></div>
+      </div>
+    </button>
+  </div>
+
+  <div class="confetti-layer" id="confettiLayer"></div>
+
+  <div class="stage" id="stageMessage" hidden>
+    <div class="msg-wrap">
+      <div class="route" aria-hidden="true">
+        <div class="route-track"></div>
+        <div class="route-fill" id="routeFill"></div>
+        <div class="route-plane" id="routePlane"></div>
+        <div class="route-end" id="routeEnd"></div>
+      </div>
+      <div class="msg-inner" id="msgInner">
+        <h1 class="msg-big" id="msgBig"></h1>
+        <p class="msg-small" id="msgSmall"></p>
+        <p class="verse-line" id="verseLine" hidden></p>
+        <button class="next-btn" id="nextBtn"><span>continuar</span><span style="font-size:18px">→</span></button>
+        <div class="final-row" id="finalRow" hidden>
+          <div class="pass" id="boardingPass"></div>
+          <button class="restart-btn" id="restartBtn"><span>↻</span><span>ver de nuevo</span></button>
+          <div class="credit-line">lo hice para ti, con mucho cariño, con las cosas que amas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ============================================================
+   Íconos SVG propios
+   ============================================================ */
+/* Fresa: arte real de Twemoji (Twitter, Inc. y colaboradores — CC-BY 4.0), no dibujada a mano */
+function strawberrySVG(size){
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 36 36">
+    <path fill="#be1931" d="M22.614 34.845c3.462-1.154 6.117-3.034 6.12-9.373C28.736 21.461 33 17 32.999 12.921C32.998 9 28.384 2.537 17.899 3.635C7.122 4.764 3 8 2.999 15.073c0 4.927 5.304 8.381 8.127 13.518C13 32 18.551 38.187 22.614 34.845"/>
+    <path fill="#77b255" d="M26.252 3.572c-1.278-1.044-3.28-1.55-5.35-1.677c.273-.037.542-.076.82-.094c.973-.063 3.614-1.232 1.4-1.087c-.969.063-1.901.259-2.837.423c.237-.154.479-.306.74-.442C21 0 17 0 14.981 1.688C14.469 1.576 14 1 11 1c-2 0-4.685.926-3 1c.917.041 2 0 1.858.365C9.203 2.425 6 3 6 4c0 .353 2.76-.173 3 0c-1.722.644-3 2-3 3c0 .423 2.211-.825 3-1c-1 1-1.4 1.701-1.342 2.427c.038.475 2.388-.09 2.632-.169c.822-.27 3.71-1.258 4.6-2.724c.117.285 2.963 1.341 4.11 1.466c.529.058 2.62.274 2.141-.711C21 6 20 5 19.695 4.025c.446-.019 8.305.975 6.557-.453"/>
+    <path fill="#f4abba" d="M9.339 17.306c-.136-1.46-2.54-3.252-2.331-1c.136 1.46 2.54 3.252 2.331 1m7.458.553c-.069-.622-.282-1.191-.687-1.671c-.466-.55-1.075-.362-1.234.316c-.187.799.082 1.752.606 2.372l.041.048q-.32-.788-.642-1.574l.006.047c.071.64.397 1.73 1.136 1.906c.754.182.826-.988.774-1.444m5.752-4.841c.476-.955.17-3.962-.831-1.954c-.476.954-.171 3.962.831 1.954m7.211-1.457c-.03-.357-.073-.78-.391-1.01c-1.189-.858-2.381 2.359-1.385 3.08q.028.018.055.039l-.331-.919l.003.052c.049.564.376 1.377 1.084.948c.667-.406 1.028-1.444.965-2.19m-1.345 8.567c1.016-1.569-.545-3.451-1.78-1.542c-1.016 1.568.546 3.45 1.78 1.542m-5.748 2.894c.173-1.938-2.309-2.752-2.51-.496c-.173 1.938 2.309 2.752 2.51.496m-9.896-1.212l-.049.004l1.362.715l-.018-.017c-.306-.28-1.353-1.083-1.788-.592c-.44.497.498 1.421.804 1.703c.342.314.928.763 1.429.73c1.437-.093-.783-2.605-1.74-2.543m13.227 5.907c.969-1.066.725-4.05-.798-2.376c-.969 1.066-.724 4.05.798 2.376M12.599 13.753q.14-.008.28-.019c.703-.046 1.004-1.454 1.042-1.952c.044-.571-.043-1.456-.785-1.407l-.281.019c-.702.047-1.004 1.454-1.042 1.952c-.044.571.044 1.457.786 1.407m7.846 15.257c.395.764.252 1.623-.32 1.919s-1.357-.081-1.753-.844c-.395-.764-.252-1.623.32-1.919s1.357.081 1.753.844"/>
+  </svg>`;
+}
+function lilySVG(size){
+  const petals = [0,60,120,180,240,300].map(a=>
+    `<path d="M0 0 C4 -6 4 -14 0 -19 C-4 -14 -4 -6 0 0 Z" fill="#ffd9e8" stroke="#ff8fc4" stroke-width=".7" transform="rotate(${a})"/>`).join('');
+  const stamens = [0,72,144,216,288].map(a=>
+    `<line x1="0" y1="0" x2="0" y2="-7" stroke="#ffb3d1" stroke-width="1.1" transform="rotate(${a})"/>`).join('');
+  return `<svg viewBox="0 0 40 40" width="${size}" height="${size}">
+    <g transform="translate(20 21)">${petals}<circle r="3.4" fill="#ff5c9d"/>${stamens}</g>
+  </svg>`;
+}
+/* Lirio grande y detallado (SVG real, no partículas): 3 pétalos externos +
+   3 internos alternados con degradé rosa-a-blanco y pequitas, 6 estambres
+   curvos con antera vino, y un brillo suave al centro. Se anima abriéndose
+   pétalo por pétalo con CSS. */
+function lilyRealisticSVG(size){
+  const outerPetal = 'M0,-3 C11,-9 18,-22 17,-40 C16,-56 9,-70 0,-78 C-9,-70 -16,-56 -17,-40 C-18,-22 -11,-9 0,-3 Z';
+  const innerPetal = 'M0,-3 C8,-7 13,-17 12,-31 C12,-44 7,-56 0,-62 C-7,-56 -12,-44 -12,-31 C-13,-17 -8,-7 0,-3 Z';
+  const outerSpeckles = [[-4, -16], [3, -20], [-2, -26], [5, -15], [0, -31], [-5, -23]];
+  const innerSpeckles = [[-2, -14], [2, -18], [0, -23]];
+  const dots = (pts, r) => pts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="${r}" fill="#9a1638" opacity=".55"/>`).join('');
+
+  let delay = 0;
+  const outers = [0, 120, 240].map(a => {
+    const html = `<g transform="rotate(${a})"><g class="lily-petal" style="animation-delay:${delay}ms">
+      <path d="${outerPetal}" fill="url(#petalGradOuter)"/>
+      <path d="M0,-6 L0,-70" stroke="#d6237a" stroke-width="1" opacity=".3" fill="none"/>
+      ${dots(outerSpeckles, 1.3)}
+    </g></g>`;
+    delay += 110;
+    return html;
+  }).join('');
+
+  const inners = [60, 180, 300].map(a => {
+    const html = `<g transform="rotate(${a})"><g class="lily-petal" style="animation-delay:${delay}ms">
+      <path d="${innerPetal}" fill="url(#petalGradInner)"/>
+      <path d="M0,-5 L0,-54" stroke="#d6237a" stroke-width=".8" opacity=".25" fill="none"/>
+      ${dots(innerSpeckles, 1.05)}
+    </g></g>`;
+    delay += 110;
+    return html;
+  }).join('');
+
+  const stamens = [30, 90, 150, 210, 270, 330].map(a => {
+    const html = `<g transform="rotate(${a})"><g class="lily-petal" style="animation-delay:${delay}ms">
+      <path d="M0,-10 C4,-24 9,-34 15,-44" stroke="#fff2df" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+      <ellipse cx="15" cy="-44" rx="2.2" ry="4.2" fill="#8a1030" transform="rotate(24 15 -44)"/>
+      <circle cx="14" cy="-45.5" r="1" fill="#c73860" opacity=".8"/>
+    </g></g>`;
+    delay += 60;
+    return html;
+  }).join('');
+
+  return `<svg viewBox="-100 -100 200 200" width="${size}" height="${size}" class="lily-svg-spin">
+    <defs>
+      <linearGradient id="petalGradOuter" x1="0" y1="0" x2="0" y2="-78" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#fff7fa"/>
+        <stop offset="38%" stop-color="#ffb8d6"/>
+        <stop offset="100%" stop-color="#ff5c9d"/>
+      </linearGradient>
+      <linearGradient id="petalGradInner" x1="0" y1="0" x2="0" y2="-62" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#fff7fa"/>
+        <stop offset="42%" stop-color="#ffc9e0"/>
+        <stop offset="100%" stop-color="#ff8fc4"/>
+      </linearGradient>
+      <radialGradient id="lilyCenterGlow" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="#fffdf7" stop-opacity=".9"/>
+        <stop offset="100%" stop-color="#fffdf7" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <circle r="16" fill="url(#lilyCenterGlow)"/>
+    ${outers}
+    ${inners}
+    ${stamens}
+    <circle r="3" fill="#fff5ec"/>
+  </svg>`;
+}
+/* Avión: arte real de Twemoji (Twitter, Inc. y colaboradores — CC-BY 4.0), recoloreado a la paleta rosa/dorada */
+function planeSVG(size, body, light, levelDeg){
+  body = body || '#ff8fc4'; light = light || '#ffe3f0';
+  const dark = '#7a2452';
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 36 36">
+    <path fill="${dark}" d="M30 23.828a.997.997 0 0 1-1.414 0l-1.414-1.414a.997.997 0 0 1 0-1.414L30 18.172a1 1 0 0 1 1.414 0l1.414 1.414a.997.997 0 0 1 0 1.414zm-15-15a.997.997 0 0 1-1.414 0l-1.414-1.414a.997.997 0 0 1 0-1.414L15 3.172a1 1 0 0 1 1.414 0l1.414 1.414a.997.997 0 0 1 0 1.414z"/>
+    <path fill="${body}" d="M2 22c2 0 11 1 11 1s1 9 1 11s-2 2-3 1s-4-6-4-6s-5-3-6-4s-1-3 1-3M4 6.039C7 6 29 7 29 7s.924 22 .962 25s-2.763 4.002-3.862.001S21 15 21 15S7.045 10.583 3.995 9.898C0 9 .999 6.077 4 6.039"/>
+    <path fill="${light}" d="M27 3c2-2 7-3 8-2s0 6-2 8s-19 18-19 18s-6.5 4.5-8 3s3-8 3-8S25 5 27 3"/>
+    <path fill="${dark}" d="M14 22s.5.5-4 5s-5 4-5 4s-.5-.5 4-5s5-4 5-4M29 4a3 3 0 0 1 3 3h.805c.114-.315.195-.645.195-1a3 3 0 0 0-3-3c-.355 0-.685.081-1 .195z"/>
+  </svg>`;
+  // el arte de Twemoji trae la nariz en diagonal (ascendiendo) dentro del lienzo;
+  // levelDeg rota solo el ícono (no la estela) para que la nariz quede horizontal
+  if (!levelDeg) return svg;
+  return `<span style="display:inline-block;transform:rotate(${levelDeg}deg)">${svg}</span>`;
+}
+
+/* ============================================================
+   Avión de partículas (Three.js) — el MISMO dibujo del avión
+   (arte de Twemoji, el de planeSVG) muestreado punto a punto con
+   isPointInPath directamente sobre sus paths reales; sin cargar
+   ninguna imagen (evita el bloqueo de seguridad de Chrome/Edge
+   al abrir el archivo directo desde el disco, file://)
+   ============================================================ */
+function buildPlanePoints(){
+  const c = document.createElement('canvas');
+  const ctx = c.getContext('2d');
+  // mismos "d" que usa planeSVG() para los paths body/light/dark (viewBox 0 0 36 36)
+  const path = new Path2D(
+    'M2 22c2 0 11 1 11 1s1 9 1 11s-2 2-3 1s-4-6-4-6s-5-3-6-4s-1-3 1-3M4 6.039C7 6 29 7 29 7s.924 22 .962 25s-2.763 4.002-3.862.001S21 15 21 15S7.045 10.583 3.995 9.898C0 9 .999 6.077 4 6.039 ' +
+    'M27 3c2-2 7-3 8-2s0 6-2 8s-19 18-19 18s-6.5 4.5-8 3s3-8 3-8S25 5 27 3 ' +
+    'M30 23.828a.997.997 0 0 1-1.414 0l-1.414-1.414a.997.997 0 0 1 0-1.414L30 18.172a1 1 0 0 1 1.414 0l1.414 1.414a.997.997 0 0 1 0 1.414zm-15-15a.997.997 0 0 1-1.414 0l-1.414-1.414a.997.997 0 0 1 0-1.414L15 3.172a1 1 0 0 1 1.414 0l1.414 1.414a.997.997 0 0 1 0 1.414z'
+  );
+  const points = [];
+  const size = 36;
+  const grid = 260;
+  for (let gy = 0; gy < grid; gy++){
+    for (let gx = 0; gx < grid; gx++){
+      const x = (gx / grid) * size;
+      const y = (gy / grid) * size;
+      if (ctx.isPointInPath(path, x, y)){
+        points.push([(x / size - 0.5) * 2, -(y / size - 0.5) * 2]);
+      }
+    }
+  }
+  for (let i = points.length - 1; i > 0; i--){
+    const j = (Math.random() * (i + 1)) | 0;
+    [points[i], points[j]] = [points[j], points[i]];
+  }
+  return points.slice(0, Math.min(900, points.length));
+}
+
+/* PRUEBA — lirio de partículas v2: solo el CONTORNO de cada pétalo (con
+   isPointInStroke), no el área rellena. Así quedan huecos oscuros entre
+   pétalos y la estrella de 6 puntas se puede distinguir en vez de fundirse
+   en una mancha. Anteras/centro sí van rellenos (son puntos chicos, no
+   generan el problema de antes). Tipo por punto: 0 pétalo, 1 estambre,
+   2 antera, 3 centro. */
+function buildLilyContourPoints(){
+  const c = document.createElement('canvas');
+  const ctx = c.getContext('2d');
+
+  const outerPetal = new Path2D('M0,-3 C11,-9 18,-22 17,-40 C16,-56 9,-70 0,-78 C-9,-70 -16,-56 -17,-40 C-18,-22 -11,-9 0,-3 Z');
+  const innerPetal = new Path2D('M0,-3 C8,-7 13,-17 12,-31 C12,-44 7,-56 0,-62 C-7,-56 -12,-44 -12,-31 C-13,-17 -8,-7 0,-3 Z');
+  const midribOuter = new Path2D('M0,-6 L0,-70');
+  const midribInner = new Path2D('M0,-5 L0,-54');
+  const stamenCurve = new Path2D('M0,-10 C4,-24 9,-34 15,-44');
+  const anther = new Path2D(); anther.ellipse(15, -44, 2.2, 4.2, Math.PI * 0.13, 0, Math.PI * 2);
+  const centerCircle = new Path2D(); centerCircle.arc(0, 0, 3, 0, Math.PI * 2);
+
+  const outerGroup = new Path2D(), outerMidribGroup = new Path2D();
+  for (let i = 0; i < 3; i++){ const m = new DOMMatrix().rotate(i * 120); outerGroup.addPath(outerPetal, m); outerMidribGroup.addPath(midribOuter, m); }
+  const innerGroup = new Path2D(), innerMidribGroup = new Path2D();
+  for (let i = 0; i < 3; i++){ const m = new DOMMatrix().rotate(60 + i * 120); innerGroup.addPath(innerPetal, m); innerMidribGroup.addPath(midribInner, m); }
+  const stamenGroup = new Path2D(), antherGroup = new Path2D();
+  for (let i = 0; i < 6; i++){ const m = new DOMMatrix().rotate(i * 60 + 30); stamenGroup.addPath(stamenCurve, m); antherGroup.addPath(anther, m); }
+
+  const half = 44, grid = 260;
+  function sampleStroke(path, type, lineWidth){
+    ctx.lineWidth = lineWidth;
+    const pts = [];
+    for (let gy = 0; gy < grid; gy++){
+      for (let gx = 0; gx < grid; gx++){
+        const x = (gx / grid - 0.5) * half * 2;
+        const y = (gy / grid - 0.5) * half * 2;
+        if (ctx.isPointInStroke(path, x, y)) pts.push([x / half, -(y / half), type]);
+      }
+    }
+    return pts;
+  }
+  function sampleFill(path, type){
+    const pts = [];
+    for (let gy = 0; gy < grid; gy++){
+      for (let gx = 0; gx < grid; gx++){
+        const x = (gx / grid - 0.5) * half * 2;
+        const y = (gy / grid - 0.5) * half * 2;
+        if (ctx.isPointInPath(path, x, y)) pts.push([x / half, -(y / half), type]);
+      }
+    }
+    return pts;
+  }
+
+  let points = [
+    ...sampleStroke(outerGroup, 0, 2.6),
+    ...sampleStroke(outerMidribGroup, 0, 1.3),
+    ...sampleStroke(innerGroup, 0, 2.2),
+    ...sampleStroke(innerMidribGroup, 0, 1.1),
+    ...sampleStroke(stamenGroup, 1, 2.0),
+    ...sampleFill(antherGroup, 2),
+    ...sampleFill(centerCircle, 3)
+  ];
+  for (let i = points.length - 1; i > 0; i--){
+    const j = (Math.random() * (i + 1)) | 0;
+    [points[i], points[j]] = [points[j], points[i]];
+  }
+  return points.slice(0, Math.min(2200, points.length));
+}
+
+function makeGlowTexture(){
+  const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+  const cx = c.getContext('2d');
+  const g = cx.createRadialGradient(32, 32, 0, 32, 32, 32);
+  g.addColorStop(0, 'rgba(255,255,255,1)');
+  g.addColorStop(.4, 'rgba(255,180,220,.85)');
+  g.addColorStop(1, 'rgba(255,92,157,0)');
+  cx.fillStyle = g; cx.fillRect(0, 0, 64, 64);
+  return new THREE.CanvasTexture(c);
+}
+
+const planeParticleColors = [0xffffff, 0xffd9e8, 0xff8fc4, 0xffe3a3];
+
+function runParticlePlaneDive(container, onImpact, onDone){
+  const width = window.innerWidth, height = window.innerHeight;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 200);
+  camera.position.set(0, 0, 10);
+
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.domElement.style.position = 'absolute';
+  renderer.domElement.style.inset = '0';
+  container.appendChild(renderer.domElement);
+
+  {
+    const points = planePoints;
+    const count = points.length;
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    const basePos = new Float32Array(count * 3); // posición local dentro del avión
+    const tmpColor = new THREE.Color();
+
+    for (let i = 0; i < count; i++){
+      const [px, py] = points[i];
+      basePos[i * 3] = px * 1.7;
+      basePos[i * 3 + 1] = py * 1.7;
+      basePos[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
+      positions[i * 3] = basePos[i * 3];
+      positions[i * 3 + 1] = basePos[i * 3 + 1];
+      positions[i * 3 + 2] = basePos[i * 3 + 2];
+      tmpColor.set(planeParticleColors[i % planeParticleColors.length]);
+      colors[i * 3] = tmpColor.r; colors[i * 3 + 1] = tmpColor.g; colors[i * 3 + 2] = tmpColor.b;
+    }
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const material = new THREE.PointsMaterial({
+      size: 0.14, map: makeGlowTexture(), transparent: true, opacity: 0,
+      vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
+    });
+
+    const points3d = new THREE.Points(geometry, material);
+
+    // el arte trae el morro en diagonal (igual que el resto de la página);
+    // este grupo lo nivela sin tocar la animación de vuelo
+    const orientationGroup = new THREE.Group();
+    orientationGroup.rotation.z = -Math.PI / 4;
+    orientationGroup.add(points3d);
+
+    const group = new THREE.Group();
+    group.add(orientationGroup);
+    scene.add(group);
+
+    // trayectoria: entra, da casi una vuelta completa alrededor del regalo
+    // (bancando como un avión real, morro siempre hacia donde vuela) y en el
+    // tramo final se endereza y clava la punta contra el regalo
+    const orbitEnd = 0.72;
+    const impactPoint = new THREE.Vector3(0, -0.3, 0.9);
+
+    function planePosition(t){
+      if (t <= orbitEnd){
+        const u = t / orbitEnd;
+        const angle = THREE.MathUtils.degToRad(THREE.MathUtils.lerp(100, -110, u));
+        const radius = THREE.MathUtils.lerp(3.3, 1.9, u);
+        const x = Math.cos(angle) * radius;
+        const y = Math.sin(angle) * radius * 0.5 + 0.25;
+        const z = -5.2 + Math.sin(u * Math.PI) * 1.4;
+        return new THREE.Vector3(x, y, z);
+      }
+      const u = (t - orbitEnd) / (1 - orbitEnd);
+      const e = u * u * (3 - 2 * u); // easing: acelera hacia el impacto
+      return planePosition(orbitEnd).lerp(impactPoint, e);
+    }
+
+    function sampleKeys(keys, t){
+      for (let i = 0; i < keys.length - 1; i++){
+        if (t >= keys[i][0] && t <= keys[i + 1][0]){
+          const f = (t - keys[i][0]) / ((keys[i + 1][0] - keys[i][0]) || 1);
+          return keys[i][1] + (keys[i + 1][1] - keys[i][1]) * f;
+        }
+      }
+      return keys[keys.length - 1][1];
+    }
+    const scaleKeys = [[0, 0.5], [0.06, 0.85], [orbitEnd, 1.05], [0.92, 0.55], [1, 0.16]];
+    const opKeys = [[0, 0], [0.06, 1], [0.94, 1], [1, 0]];
+
+    const flightDuration = 2600;
+    const explodeDuration = 650;
+    let phase = 'flight';
+    let phaseStart = performance.now();
+    let velocities = null;
+    const noseAxis = new THREE.Vector3(1, 0, 0);
+
+    function tick(now){
+      const elapsed = now - phaseStart;
+
+      if (phase === 'flight'){
+        const t = Math.min(elapsed / flightDuration, 1);
+        const p = planePosition(t);
+        group.position.copy(p);
+
+        const dt = 0.004;
+        const p0 = planePosition(Math.max(0, t - dt));
+        const p1 = planePosition(Math.min(1, t + dt));
+        const tangent = p1.sub(p0);
+        if (tangent.lengthSq() > 1e-8){
+          tangent.normalize();
+          group.quaternion.setFromUnitVectors(noseAxis, tangent);
+          const rollAngle = t <= orbitEnd ? -0.6 * Math.sin((t / orbitEnd) * Math.PI) : 0;
+          group.rotateX(rollAngle);
+        }
+
+        group.scale.setScalar(sampleKeys(scaleKeys, t));
+        material.opacity = sampleKeys(opKeys, t);
+
+        if (t >= 1){
+          phase = 'explode';
+          phaseStart = now;
+          group.updateMatrixWorld(true);
+          const pos = geometry.attributes.position;
+          velocities = new Float32Array(count * 3);
+          for (let i = 0; i < count; i++){
+            const local = new THREE.Vector3(basePos[i * 3], basePos[i * 3 + 1], basePos[i * 3 + 2]);
+            const world = local.applyMatrix4(orientationGroup.matrixWorld);
+            pos.array[i * 3] = world.x; pos.array[i * 3 + 1] = world.y; pos.array[i * 3 + 2] = world.z;
+            const dir = new THREE.Vector3(local.x, local.y, local.z + (Math.random() - 0.5) * 2).normalize();
+            const speed = 1.4 + Math.random() * 2.2;
+            velocities[i * 3] = dir.x * speed;
+            velocities[i * 3 + 1] = dir.y * speed + 0.6;
+            velocities[i * 3 + 2] = dir.z * speed;
+          }
+          pos.needsUpdate = true;
+          group.position.set(0, 0, 0);
+          group.quaternion.identity();
+          group.scale.setScalar(1);
+          points3d.position.set(0, 0, 0);
+          material.opacity = 1;
+          onImpact && onImpact();
+        }
+      } else if (phase === 'explode'){
+        const t = Math.min(elapsed / explodeDuration, 1);
+        const dt = 0.016;
+        const pos = geometry.attributes.position;
+        for (let i = 0; i < count; i++){
+          velocities[i * 3 + 1] -= 2.6 * dt; // gravedad leve
+          pos.array[i * 3] += velocities[i * 3] * dt;
+          pos.array[i * 3 + 1] += velocities[i * 3 + 1] * dt;
+          pos.array[i * 3 + 2] += velocities[i * 3 + 2] * dt;
+        }
+        pos.needsUpdate = true;
+        material.opacity = 1 - t;
+
+        if (t >= 1){
+          renderer.dispose();
+          geometry.dispose();
+          material.dispose();
+          onDone && onDone();
+          return;
+        }
+      }
+
+      renderer.render(scene, camera);
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+}
+
+/* PRUEBA — lirio de partículas v2: solo contorno, partículas chicas y
+   poco solapadas para que no se fundan en una mancha. Mismo esquema de
+   polvo -> capullo -> apertura -> queda flotando */
+function runContourLily(container){
+  const width = window.innerWidth, height = window.innerHeight;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, width / height, 0.1, 200);
+  camera.position.set(0, 0, 10);
+
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.domElement.style.position = 'absolute';
+  renderer.domElement.style.inset = '0';
+  container.appendChild(renderer.domElement);
+
+  const points = lilyContourPoints;
+  const count = points.length;
+  const positions = new Float32Array(count * 3);
+  const startPos = new Float32Array(count * 3);
+  const budPos = new Float32Array(count * 3);
+  const targetPos = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const petalColors = [0xff8fc4, 0xff6fae, 0xffb3d1, 0xffd0e4];
+  const partColors = { 1: [0xfff2df], 2: [0xff2f5f, 0xd81a4a], 3: [0xfff5ec] };
+  const tmpColor = new THREE.Color();
+  const scaleFactor = 3.8;
+  const budRadius = 0.6;
+
+  for (let i = 0; i < count; i++){
+    const [px, py, type] = points[i];
+    targetPos[i * 3] = px * scaleFactor;
+    targetPos[i * 3 + 1] = py * scaleFactor;
+    targetPos[i * 3 + 2] = (Math.random() - 0.5) * 0.5;
+
+    const len = Math.hypot(targetPos[i * 3], targetPos[i * 3 + 1], targetPos[i * 3 + 2]) || 1;
+    budPos[i * 3] = (targetPos[i * 3] / len) * budRadius;
+    budPos[i * 3 + 1] = (targetPos[i * 3 + 1] / len) * budRadius * 1.3;
+    budPos[i * 3 + 2] = (targetPos[i * 3 + 2] / len) * budRadius;
+
+    const a = Math.random() * Math.PI * 2, r = 5 + Math.random() * 4;
+    startPos[i * 3] = Math.cos(a) * r;
+    startPos[i * 3 + 1] = Math.sin(a) * r * 0.6;
+    startPos[i * 3 + 2] = (Math.random() - 0.5) * 3 - 2;
+
+    positions[i * 3] = startPos[i * 3]; positions[i * 3 + 1] = startPos[i * 3 + 1]; positions[i * 3 + 2] = startPos[i * 3 + 2];
+    const palette = type === 0 ? petalColors : partColors[type];
+    tmpColor.set(palette[(Math.random() * palette.length) | 0]);
+    colors[i * 3] = tmpColor.r; colors[i * 3 + 1] = tmpColor.g; colors[i * 3 + 2] = tmpColor.b;
+  }
+
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  const material = new THREE.PointsMaterial({
+    size: 0.075, map: makeGlowTexture(), transparent: true, opacity: 0,
+    vertexColors: true, blending: THREE.AdditiveBlending, depthWrite: false, sizeAttenuation: true
+  });
+  const points3d = new THREE.Points(geometry, material);
+  const group = new THREE.Group();
+  group.add(points3d);
+  group.position.set(0, 0.1, -6.5);
+  group.rotation.x = -0.22;
+  scene.add(group);
+
+  const gatherDuration = 750, bloomDuration = 1100, bloomEnd = gatherDuration + bloomDuration;
+  const start = performance.now();
+  let stopped = false;
+
+  function easeOutBack(x){ const c1 = 1.25, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); }
+
+  function tick(now){
+    if (stopped) return;
+    const elapsed = now - start;
+    const pos = geometry.attributes.position;
+
+    if (elapsed <= gatherDuration){
+      const u = elapsed / gatherDuration;
+      const e = 1 - Math.pow(1 - u, 3);
+      for (let i = 0; i < count; i++){
+        pos.array[i * 3] = startPos[i * 3] + (budPos[i * 3] - startPos[i * 3]) * e;
+        pos.array[i * 3 + 1] = startPos[i * 3 + 1] + (budPos[i * 3 + 1] - startPos[i * 3 + 1]) * e;
+        pos.array[i * 3 + 2] = startPos[i * 3 + 2] + (budPos[i * 3 + 2] - startPos[i * 3 + 2]) * e;
+      }
+      pos.needsUpdate = true;
+      material.opacity = Math.min(u / 0.3, 1) * 0.85;
+    } else if (elapsed <= bloomEnd){
+      const u = (elapsed - gatherDuration) / bloomDuration;
+      const e = easeOutBack(u);
+      for (let i = 0; i < count; i++){
+        pos.array[i * 3] = budPos[i * 3] + (targetPos[i * 3] - budPos[i * 3]) * e;
+        pos.array[i * 3 + 1] = budPos[i * 3 + 1] + (targetPos[i * 3 + 1] - budPos[i * 3 + 1]) * e;
+        pos.array[i * 3 + 2] = budPos[i * 3 + 2] + (targetPos[i * 3 + 2] - budPos[i * 3 + 2]) * e;
+      }
+      pos.needsUpdate = true;
+      material.opacity = 0.85;
+    } else {
+      material.opacity = 0.78 + Math.sin(elapsed / 1400) * 0.07;
+    }
+
+    group.rotation.y = elapsed * 0.00012;
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  return {
+    stop(){ stopped = true; renderer.dispose(); geometry.dispose(); material.dispose(); }
+  };
+}
+
+/* ============================================================
+   Sonido sintetizado (sin archivos externos)
+   ============================================================ */
+let actx = null;
+function audioCtx(){ if (!actx) actx = new (window.AudioContext||window.webkitAudioContext)(); return actx; }
+function whoosh(duration){
+  const ctx = audioCtx(); const now = ctx.currentTime;
+  const osc = ctx.createOscillator(); const gain = ctx.createGain();
+  const filter = ctx.createBiquadFilter(); filter.type='lowpass';
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime(90, now);
+  osc.frequency.exponentialRampToValueAtTime(560, now + duration*0.7);
+  osc.frequency.exponentialRampToValueAtTime(120, now + duration);
+  filter.frequency.setValueAtTime(200, now);
+  filter.frequency.exponentialRampToValueAtTime(3000, now + duration*0.7);
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.22, now + duration*0.3);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+  osc.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+  osc.start(now); osc.stop(now + duration + 0.05);
+}
+function impactHit(){
+  const ctx = audioCtx(); const now = ctx.currentTime;
+  const osc = ctx.createOscillator(); const gain = ctx.createGain();
+  osc.type = 'sine'; osc.frequency.setValueAtTime(150, now);
+  osc.frequency.exponentialRampToValueAtTime(38, now + 0.35);
+  gain.gain.setValueAtTime(0.5, now);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start(now); osc.stop(now + 0.45);
+
+  const bufferSize = ctx.sampleRate * 0.25;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i=0;i<bufferSize;i++) data[i] = (Math.random()*2-1) * (1 - i/bufferSize);
+  const noise = ctx.createBufferSource(); noise.buffer = buffer;
+  const nGain = ctx.createGain(); nGain.gain.setValueAtTime(0.3, now); nGain.gain.exponentialRampToValueAtTime(0.0001, now+0.25);
+  const hp = ctx.createBiquadFilter(); hp.type='highpass'; hp.frequency.value=1200;
+  noise.connect(hp); hp.connect(nGain); nGain.connect(ctx.destination);
+  noise.start(now);
+}
+function chime(){
+  const ctx = audioCtx(); const now = ctx.currentTime;
+  [880, 1318, 1760].forEach((freq,i)=>{
+    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+    osc.type='sine'; osc.frequency.value = freq;
+    const t0 = now + i*0.09;
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.exponentialRampToValueAtTime(0.16, t0+0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0+0.5);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(t0); osc.stop(t0+0.55);
+  });
+}
+function tick(){
+  const ctx = audioCtx(); const now = ctx.currentTime;
+  const osc = ctx.createOscillator(); const gain = ctx.createGain();
+  osc.type='square'; osc.frequency.setValueAtTime(520, now);
+  gain.gain.setValueAtTime(0.05, now);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now+0.06);
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.start(now); osc.stop(now+0.07);
+}
+function ambientSwell(){
+  const ctx = audioCtx(); const now = ctx.currentTime;
+  [220,277,330].forEach((freq,i)=>{
+    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+    osc.type='sine'; osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.03, now+1.2);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now+4.5);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(now); osc.stop(now+4.6);
+  });
+}
+
+/* ============================================================
+   Fondo bokeh realista con parallax (imagen generada con IA +
+   movimiento por mouse/giroscopio + drift automático sutil)
+   ============================================================ */
+function initBokehParallax(){
+  const img = document.getElementById('bokehImg');
+
+  function pickSrc(){
+    return window.innerHeight >= window.innerWidth ? 'fondo-bokeh-vertical.jpg' : 'fondo-bokeh-horizontal.jpg';
+  }
+  function setSrc(){
+    const next = pickSrc();
+    if (img.dataset.current === next) return;
+    img.dataset.current = next;
+    img.classList.remove('loaded');
+    img.onload = () => img.classList.add('loaded');
+    img.src = next;
+  }
+  setSrc();
+  window.addEventListener('resize', setSrc);
+
+  let targetX = 0, targetY = 0, curX = 0, curY = 0;
+  const strength = 18; // desplazamiento máximo en px
+
+  window.addEventListener('mousemove', (e) => {
+    targetX = (e.clientX / window.innerWidth - 0.5) * 2;
+    targetY = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+  if (window.DeviceOrientationEvent){
+    window.addEventListener('deviceorientation', (e) => {
+      if (e.gamma == null || e.beta == null) return;
+      targetX = Math.max(-1, Math.min(1, e.gamma / 30));
+      targetY = Math.max(-1, Math.min(1, (e.beta - 45) / 30));
+    });
+  }
+
+  function raf(){
+    curX += (targetX - curX) * 0.04;
+    curY += (targetY - curY) * 0.04;
+    const t = performance.now() * 0.00003;
+    const driftX = Math.sin(t) * 4, driftY = Math.cos(t * 0.8) * 3;
+    img.style.transform =
+      `translate(calc(-50% + ${(-curX * strength + driftX).toFixed(2)}px), calc(-50% + ${(-curY * strength + driftY).toFixed(2)}px))`;
+    requestAnimationFrame(raf);
+  }
+  requestAnimationFrame(raf);
+}
+
+/* ============================================================
+   Fondo: estrellas, flora flotando, aviones de fondo
+   ============================================================ */
+function initStars(){
+  const layer = document.getElementById('stars');
+  for (let i=0;i<40;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    s.style.left = ((i*37+5)%97)+'%';
+    s.style.top = ((i*29+4)%94)+'%';
+    const size = 2+(i%3);
+    s.style.width = size+'px'; s.style.height = size+'px';
+    s.style.background = i%3===0 ? '#fff' : '#ffb3d1';
+    s.style.opacity = .3+(i%4)*.15;
+    s.style.animation = `vDrift ${5+i%5}s ease-in-out ${i*.2}s infinite`;
+    layer.appendChild(s);
+  }
+}
+function initFlora(){
+  const layer = document.getElementById('floraLayer');
+  /* posiciones fijas alrededor de los bordes, para dejar libre el centro donde va el texto */
+  const spots = [[4,7],[20,4],[80,5],[94,13],[3,30],[93,33],[5,52],[92,55],[4,75],[93,78],[17,92],[82,91],[50,96]];
+  spots.forEach(([left, top], i) => {
+    const d = document.createElement('div');
+    d.style.position='absolute';
+    d.style.left = left+'%';
+    d.style.top = top+'%';
+    d.style.animation = `vFloat ${7+i%4}s ease-in-out ${i*.35}s infinite`;
+    d.innerHTML = i%2===0 ? strawberrySVG(16+(i%3)*8) : lilySVG(20+(i%3)*9);
+    layer.appendChild(d);
+  });
+}
+function initFlyby(){
+  const layer = document.getElementById('flybyLayer');
+  const a = document.createElement('div');
+  a.className='flyby-item'; a.style.top='8%'; a.style.left='0'; a.style.animation='vFly 15s linear infinite';
+  a.innerHTML = `<div class="contrail"></div>${planeSVG(58, undefined, undefined, 45)}`;
+  const b = document.createElement('div');
+  b.className='flyby-item'; b.style.top='90%'; b.style.left='0'; b.style.opacity='.45';
+  b.style.animation='vFly 22s linear 6s infinite';
+  b.innerHTML = `<div class="contrail" style="width:90px"></div>${planeSVG(38,'#ffd9e8','#ff8fc4', 45)}`;
+  layer.appendChild(a); layer.appendChild(b);
+}
+
+/* ============================================================
+   Máquina de etapas
+   ============================================================ */
+const stageIntro = document.getElementById('stageIntro');
+const stageGift = document.getElementById('stageGift');
+const stageMessage = document.getElementById('stageMessage');
+const giftBtn = document.getElementById('giftBtn');
+const giftBox = document.getElementById('giftBox');
+const giftHead = document.getElementById('giftHead');
+const giftGlow = document.getElementById('giftGlow');
+const gbPreview = document.getElementById('gbPreview');
+const gbBow = document.getElementById('gbBow');
+const confettiLayer = document.getElementById('confettiLayer');
+const letterTop = document.getElementById('letterTop');
+const letterBottom = document.getElementById('letterBottom');
+const grain = document.getElementById('grain');
+const root = document.getElementById('stageRoot');
+
+gbBow.innerHTML = lilySVG(54);
+
+let planePoints = [];
+let lilyContourPoints = [];
+document.addEventListener('DOMContentLoaded', () => {
+  initBokehParallax();
+  initStars(); initFlora(); initFlyby();
+  try { planePoints = buildPlanePoints(); }
+  catch (err) { console.error('No se pudo armar la nube de puntos del avión:', err); }
+  try { lilyContourPoints = buildLilyContourPoints(); }
+  catch (err) { console.error('No se pudo armar el contorno de partículas del lirio:', err); }
+  document.getElementById('pulseRing').innerHTML = strawberrySVG(40);
+  setTimeout(() => {
+    stageIntro.hidden = true;
+    stageGift.hidden = false;
+  }, 2600);
+});
+
+giftBtn.addEventListener('mouseenter', () => { if (!giftBox.classList.contains('opening')) giftBox.classList.add('wiggle'); });
+giftBtn.addEventListener('mouseleave', () => giftBox.classList.remove('wiggle'));
+
+let diving = false;
+let activeLilyBg = null;
+let activeLilyParticles = null;
+giftBtn.addEventListener('click', () => {
+  if (diving || giftBox.classList.contains('opening')) return;
+  diving = true;
+  audioCtx(); // desbloquea audio en el primer gesto del usuario
+  if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
+    DeviceOrientationEvent.requestPermission().catch(() => {}); // iOS: habilita el parallax por giroscopio
+  }
+  openGift();
+});
+
+function openGift(){
+  giftBtn.classList.add('diving');
+
+  // cinematografía: letterbox se cierra y el avión se zambulle
+  letterTop.classList.add('show'); letterBottom.classList.add('show');
+  whoosh(2.6);
+  if (navigator.vibrate) navigator.vibrate(15);
+
+  const dive = document.createElement('div');
+  dive.className = 'dive-stage';
+  root.appendChild(dive);
+
+  runParticlePlaneDive(dive, () => {
+    fireBurst();
+  }, () => {
+    dive.remove();
+    diving = false;
+  });
+
+  setTimeout(() => {
+    giftHead.style.transition = 'opacity .3s ease';
+    giftHead.style.opacity = '0';
+    giftBox.classList.add('opening');
+    gbPreview.innerHTML = strawberrySVG(38) + planeSVG(74);
+    gbPreview.classList.add('show');
+    giftGlow.style.display = 'none';
+    spawnConfetti(95);
+  }, 2800);
+
+  setTimeout(() => {
+    stageGift.hidden = true;
+    stageMessage.hidden = false;
+    letterTop.classList.remove('show'); letterBottom.classList.remove('show');
+    if (activeLilyParticles) activeLilyParticles.stop();
+    if (activeLilyBg) activeLilyBg.remove();
+    activeLilyBg = document.createElement('div');
+    activeLilyBg.className = 'lily-bg';
+    activeLilyBg.innerHTML = lilyRealisticSVG(560);
+    root.appendChild(activeLilyBg);
+    showStep(0);
+  }, 4200);
+}
+
+function fireBurst(){
+  impactHit();
+  grain.classList.add('flash');
+  setTimeout(() => grain.classList.remove('flash'), 90);
+  root.style.animation = 'vShake .5s ease-in-out';
+  setTimeout(() => root.style.animation = '', 500);
+}
+
+/* ---------- confeti con física real (JS), mezcla fresas y lirios ---------- */
+const confettiColors = ['#ff5c9d','#ffb3d1','#ffffff','#e8134a','#ffd9e8','#f472b6'];
+function spawnConfetti(n){
+  for (let i=0;i<n;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const kind = i % 6;
+    const size = 6 + Math.random()*10;
+    const left = 50 + (Math.random()-0.5)*70;
+    const angle = Math.random()*360 * Math.PI/180;
+    const dist = (30 + Math.random()*70) * window.innerHeight/100;
+    const rot = Math.random()*720-360;
+    const dur = 1500 + Math.random()*1500;
+    const delay = Math.random()*300;
+    el.style.left = left+'%';
+    if (kind===4){ el.innerHTML = strawberrySVG(size+10); }
+    else if (kind===5){ el.innerHTML = lilySVG(size+12); }
+    else{
+      el.style.width = size+'px'; el.style.height = size+'px';
+      el.style.background = confettiColors[kind % confettiColors.length];
+      el.style.borderRadius = kind===0 ? '50%' : kind===1 ? '2px' : '0';
+      if (kind===2) el.style.clipPath = 'polygon(50% 0%,100% 50%,50% 100%,0% 50%)';
+    }
+    confettiLayer.appendChild(el);
+    const endX = Math.cos(angle)*dist;
+    const endY = Math.sin(angle)*dist - window.innerHeight*0.2;
+    const anim = el.animate([
+      { opacity:0, transform:'translate(0,0) rotate(0deg) scale(.5)' },
+      { opacity:1, offset:0.15, transform:'translate(0,0) rotate(45deg) scale(1)' },
+      { opacity:0, transform:`translate(${endX}px, ${endY}px) rotate(${rot}deg) scale(.8)` }
+    ], { duration: dur, delay, easing:'cubic-bezier(.15,.8,.3,1)', fill:'forwards' });
+    anim.onfinish = () => el.remove();
+  }
+}
+
+/* ---------- mensajes ---------- */
+const steps = [
+  { big: 'Hoy es *tu* día,\nVale', small: 'y quería hacerte algo desde el corazón' },
+  { big: 'Ni siquiera\nfue un *plan*', small: 'una invitación a jugar vóley fue todo lo que hizo falta para que empezáramos a hablar' },
+  { big: 'Ahí *empezó*\ntodo', small: 'y no dejo de darle gracias a Dios por cruzar nuestros caminos' },
+  { big: 'Siempre estaré\n*agradecido* con Dios', small: 'por haberte conocido. Eres una persona con un corazón muy grande, eres inteligente y transmites felicidad a todo el que está cerca de ti, y tienes tantas cosas de fresa que ya perdí la cuenta, pero se me hace algo muy bonito de ti.' },
+  { big: 'No sabes\nquerer *a medias*', small: 'cuando quieres, quieres con todo. Y esa misma intensidad la pones en todo lo demás: no importa qué problema tengas, siempre estás ahí para hablarlo y buscarle solución, y estás ahí para tus amigos cada vez que te necesitan, sin pensarlo dos veces.' },
+  { big: 'Todo lo que haces,\nlo haces con *cariño*', small: 'se nota en cómo cuidas tus plantitas y tus flores, y en todo lo que haces con tus manos, cosas que nacen de ti aunque no siempre te las vea nadie.' },
+  { big: 'Eso te hace\n*única*, Vale', small: 'aunque estoy seguro que todavía me faltan muchas cosas tuyas por conocer. Gracias por ser parte de este vuelo y de mi vida.' },
+  { big: 'Feliz *Cumpleaños*,\nVale', small: 'que este año te lleve exactamente a donde sueñas llegar', verse: '"Te conceda conforme a tu corazón, y cumpla todo tu consejo." (Salmos 20:4)', final: true }
+];
+let step = 0;
+const routeFill = document.getElementById('routeFill');
+const routePlane = document.getElementById('routePlane');
+const routeEnd = document.getElementById('routeEnd');
+routePlane.innerHTML = planeSVG(24, undefined, undefined, 45);
+routeEnd.innerHTML = strawberrySVG(18);
+const msgBig = document.getElementById('msgBig');
+const msgSmall = document.getElementById('msgSmall');
+const verseLine = document.getElementById('verseLine');
+const msgInner = document.getElementById('msgInner');
+const nextBtn = document.getElementById('nextBtn');
+const finalRow = document.getElementById('finalRow');
+const boardingPass = document.getElementById('boardingPass');
+
+/* código de barras decorativo: las barras salen del texto, así siempre es el mismo */
+function barcodeSVG(seed){
+  const bars = [];
+  let x = 0, n = 0;
+  while (x < 100){
+    const c = seed.charCodeAt(n % seed.length) + n * 7;
+    const w = 1 + (c % 3);
+    bars.push(`<rect x="${x}" y="0" width="${w}" height="30"/>`);
+    x += w + 1 + ((c >> 2) % 2);
+    n++;
+  }
+  return `<svg class="pass-barcode" viewBox="0 0 ${x} 30" preserveAspectRatio="none" fill="rgba(255,240,247,.85)">${bars.join('')}</svg>`;
+}
+
+const passField = (label, value) =>
+  `<div class="pass-field"><span class="pass-label">${label}</span><span class="pass-value">${value}</span></div>`;
+
+/* cumpleaños de Vale */
+const passDate = '20 NOV';
+
+boardingPass.innerHTML = `
+  <div class="pass-main">
+    <div class="pass-head"><span class="pass-brand">AEROLÍNEA LA CAPITANA</span><span class="pass-kind">pase de embarque</span></div>
+    <div class="pass-route">
+      ${planeSVG(30, undefined, undefined, 45)}
+      <div class="pass-end"><span class="pass-label">destino</span><span class="pass-code">TODO LO QUE SUEÑAS</span></div>
+    </div>
+    <div class="pass-grid">
+      ${passField('pasajera', 'VALE')}
+      ${passField('vuelo', 'VL 23')}
+      ${passField('asiento', '23A')}
+      ${passField('clase', 'PRIMERA')}
+    </div>
+  </div>
+  <div class="pass-stub">
+    ${passField('fecha', passDate)}
+    ${passField('embarque', 'AHORA')}
+    ${barcodeSVG('VALE-VL23-23A-CAPITANA')}
+  </div>`;
+
+function showStep(i){
+  step = i;
+  const s = steps[i];
+  const pct = i / (steps.length - 1) * 100;
+  routeFill.style.width = pct + '%';
+  routePlane.style.left = pct + '%';
+  routeEnd.classList.toggle('arrived', !!s.final);
+  msgBig.innerHTML = s.big
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>');
+  msgBig.className = 'msg-big' + (s.final ? ' final' : '');
+  msgSmall.textContent = s.small;
+  verseLine.textContent = s.verse || '';
+  verseLine.hidden = !s.verse;
+  msgInner.style.animation = 'none'; void msgInner.offsetWidth; msgInner.style.animation = '';
+  if (s.final){
+    nextBtn.hidden = true; finalRow.hidden = false;
+    ambientSwell(); chime(); spawnConfetti(150);
+  } else {
+    nextBtn.hidden = false; finalRow.hidden = true;
+  }
+}
+
+nextBtn.addEventListener('click', () => {
+  tick();
+  if (step < steps.length-1) showStep(step+1);
+});
+restartBtn_listener();
+function restartBtn_listener(){
+  document.getElementById('restartBtn').addEventListener('click', () => {
+    stageMessage.hidden = true;
+    stageGift.hidden = false;
+    giftBox.classList.remove('opening');
+    giftBtn.classList.remove('diving');
+    giftHead.style.opacity = '1';
+    giftGlow.style.display = 'block';
+    gbPreview.classList.remove('show');
+    gbPreview.innerHTML = '';
+    step = 0;
+    if (activeLilyParticles) { activeLilyParticles.stop(); activeLilyParticles = null; }
+    if (activeLilyBg) { activeLilyBg.remove(); activeLilyBg = null; }
+  });
+}
+</script>
+</body>
+</html>
