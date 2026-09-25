@@ -169,6 +169,29 @@ button{font-family:inherit}
   .pass-kind{display:none}
 }
 
+/* ---------- música: botón de silencio ---------- */
+.sound-btn{position:fixed;top:16px;right:16px;z-index:50;width:40px;height:40px;border-radius:50%;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,92,157,.35);color:var(--text-2);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  opacity:0;pointer-events:none;transition:opacity var(--dur) var(--ease-in)}
+.sound-btn.show{opacity:.8;pointer-events:auto}
+.sound-btn .ic-off{display:none}
+.sound-btn.muted .ic-on{display:none}
+.sound-btn.muted .ic-off{display:block}
+
+/* ---------- guiño JoJo: "To Be Continued" ---------- */
+.tbc-arrow{position:fixed;right:20px;bottom:26px;z-index:50;border:none;cursor:pointer;padding:11px 26px 11px 46px;
+  font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:700;font-size:clamp(16px,2.3vw,23px);letter-spacing:.01em;
+  color:#f6e7c1;background:linear-gradient(180deg,#8c6a3a,#5a411f);
+  clip-path:polygon(30px 0,100% 0,100% 100%,30px 100%,0 50%);
+  transform:translateX(140%);transition:transform .7s var(--ease-in)}
+.tbc-arrow.show{transform:translateX(0)}
+.tbc-arrow.show.idle{animation:vTbcNudge 1.8s ease-in-out .7s infinite}
+@keyframes vTbcNudge{0%,100%{transform:translateX(0)}50%{transform:translateX(-7px)}}
+/* al tocarla: todo se congela con el tono sepia del anime */
+.tbc-tint{position:fixed;inset:0;z-index:46;pointer-events:none;background:#b8925a;mix-blend-mode:color;opacity:0;transition:opacity .35s ease}
+.root.tbc-freeze .tbc-tint{opacity:.85}
+.root.tbc-freeze *{animation-play-state:paused!important}
+
 /* ---------- animaciones ---------- */
 @keyframes vFadeIn{from{opacity:0}to{opacity:1}}
 @keyframes vPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,92,157,.5)}50%{transform:scale(1.08);box-shadow:0 0 0 24px rgba(255,92,157,0)}}
@@ -211,6 +234,13 @@ button{font-family:inherit}
   <div class="letterbox letterbox-bottom" id="letterBottom"></div>
   <div class="grain" id="grain"></div>
   <div class="vignette"></div>
+  <div class="tbc-tint"></div>
+
+  <button class="sound-btn" id="soundBtn" aria-label="silenciar música">
+    <svg class="ic-on" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>
+    <svg class="ic-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m16 9 6 6"/><path d="m22 9-6 6"/></svg>
+  </button>
+  <button class="tbc-arrow" id="tbcBtn" hidden>To Be Continued</button>
 
   <div class="stage" id="stageIntro">
     <div style="text-align:center">
@@ -976,6 +1006,7 @@ giftBtn.addEventListener('click', () => {
   if (diving || giftBox.classList.contains('opening')) return;
   diving = true;
   audioCtx(); // desbloquea audio en el primer gesto del usuario
+  startMusic();
   if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function'){
     DeviceOrientationEvent.requestPermission().catch(() => {}); // iOS: habilita el parallax por giroscopio
   }
@@ -1027,6 +1058,7 @@ function openGift(){
 
 function fireBurst(){
   impactHit();
+  duckMusic();
   grain.classList.add('flash');
   setTimeout(() => grain.classList.remove('flash'), 90);
   root.style.animation = 'vShake .5s ease-in-out';
@@ -1151,6 +1183,7 @@ function showStep(i){
   if (s.final){
     nextBtn.hidden = true; finalRow.hidden = false;
     ambientSwell(); chime(); spawnConfetti(150);
+    duckMusic(); scheduleTbc();
   } else {
     nextBtn.hidden = false; finalRow.hidden = true;
   }
@@ -1174,7 +1207,111 @@ function restartBtn_listener(){
     step = 0;
     if (activeLilyParticles) { activeLilyParticles.stop(); activeLilyParticles = null; }
     if (activeLilyBg) { activeLilyBg.remove(); activeLilyBg = null; }
+    resetTbc();
   });
+}
+
+/* ============================================================
+   Música de fondo (Naruto en piano) + guiño "To Be Continued"
+   Si falta alguno de los archivos, simplemente no suena.
+   ============================================================ */
+const music = new Audio('musica.mp3');
+music.loop = true; music.preload = 'auto';
+const tbcAudio = new Audio('roundabout.mp3');
+tbcAudio.preload = 'auto';
+const MUSIC_VOL = .35;
+const soundBtn = document.getElementById('soundBtn');
+const tbcBtn = document.getElementById('tbcBtn');
+let musicGain = null, musicWired = false, musicLevel = 0, muted = false;
+let tbcTimer = null, tbcActive = false, duckTimer = null;
+
+/* en iPhone el volumen de <audio> no se puede cambiar por código, así que la música
+   pasa por el mismo AudioContext de los efectos; abriendo el archivo local (file://)
+   el navegador no lo permite y se usa el volumen normal del elemento */
+function wireMusic(){
+  if (musicWired) return;
+  musicWired = true;
+  if (location.protocol === 'file:') return;
+  try {
+    const ctx = audioCtx();
+    musicGain = ctx.createGain();
+    musicGain.gain.value = 0;
+    ctx.createMediaElementSource(music).connect(musicGain).connect(ctx.destination);
+  } catch (e) { musicGain = null; }
+}
+function fadeElement(el, to, secs){
+  const id = el._fade = (el._fade || 0) + 1;
+  const from = el.volume, t0 = performance.now();
+  (function stepFade(t){
+    if (el._fade !== id) return;
+    const k = Math.min(1, (t - t0) / (secs * 1000));
+    el.volume = from + (to - from) * k;
+    if (k < 1) requestAnimationFrame(stepFade);
+  })(t0);
+}
+function setMusic(level, secs){
+  musicLevel = level;
+  const v = level * MUSIC_VOL;
+  if (musicGain){
+    const now = audioCtx().currentTime;
+    musicGain.gain.cancelScheduledValues(now);
+    musicGain.gain.setValueAtTime(musicGain.gain.value, now);
+    musicGain.gain.linearRampToValueAtTime(v, now + secs);
+  } else {
+    fadeElement(music, v, secs);
+  }
+}
+function startMusic(){
+  wireMusic();
+  if (!musicGain && music.paused) music.volume = 0;
+  music.play().then(() => {
+    setMusic(1, 4);
+    soundBtn.classList.add('show');
+  }).catch(() => {}); // sin archivo: sigue todo igual, sin música
+}
+/* baja la música un momento para que se escuchen el impacto y el final */
+function duckMusic(){
+  if (!musicLevel || tbcActive) return;
+  setMusic(.3, .3);
+  clearTimeout(duckTimer);
+  duckTimer = setTimeout(() => { if (!tbcActive) setMusic(1, 1.5); }, 1800);
+}
+
+soundBtn.addEventListener('click', () => {
+  muted = !muted;
+  music.muted = muted; tbcAudio.muted = muted;
+  if (actx) muted ? actx.suspend() : actx.resume();
+  soundBtn.classList.toggle('muted', muted);
+  soundBtn.setAttribute('aria-label', muted ? 'activar música' : 'silenciar música');
+});
+
+function scheduleTbc(){
+  clearTimeout(tbcTimer);
+  tbcTimer = setTimeout(() => {
+    tbcBtn.hidden = false;
+    requestAnimationFrame(() => tbcBtn.classList.add('show', 'idle'));
+  }, 3500);
+}
+tbcBtn.addEventListener('click', () => {
+  if (tbcActive) return;
+  tbcActive = true;
+  tbcBtn.classList.remove('idle');
+  root.classList.add('tbc-freeze');
+  tbcAudio.currentTime = 0;
+  tbcAudio.play().then(() => {
+    // como en el anime: la música se apaga y entra Roundabout
+    clearTimeout(duckTimer);
+    setMusic(0, 1.2);
+    setTimeout(() => { if (tbcActive) music.pause(); }, 1300);
+  }).catch(() => {}); // sin archivo: queda solo el congelado sepia, la música sigue
+});
+function resetTbc(){
+  clearTimeout(tbcTimer);
+  tbcActive = false;
+  tbcBtn.classList.remove('show', 'idle');
+  tbcBtn.hidden = true;
+  root.classList.remove('tbc-freeze');
+  tbcAudio.pause();
 }
 </script>
 </body>
