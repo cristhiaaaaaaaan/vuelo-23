@@ -159,7 +159,7 @@ button{font-family:inherit}
 .restart-btn{padding:10px 20px;background:rgba(255,255,255,.06);color:var(--text-2);border:1px solid rgba(255,92,157,.35);border-radius:100px;font-size:13px;font-weight:600;letter-spacing:.04em;cursor:pointer;display:inline-flex;align-items:center;gap:8px;backdrop-filter:blur(8px)}
 .credit-line{margin-top:10px;font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:12px;color:rgba(255,217,232,.35)}
 
-/* ---------- pase de embarque ---------- */
+/* ---------- pase de abordar ---------- */
 .pass{display:flex;width:min(100%,560px);margin:0 auto;text-align:left;animation:vFadeInUp var(--dur) .3s var(--ease-in) both}
 .pass-main,.pass-stub{background:linear-gradient(150deg,rgba(255,240,247,.15),rgba(255,240,247,.06));backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:inset 0 0 0 1px rgba(255,143,196,.28)}
 /* muescas en el corte entre cuerpo y talón */
@@ -263,13 +263,13 @@ button{font-family:inherit}
     <div style="text-align:center">
       <div class="kicker-sm">Para Vale</div>
       <!-- casillas vacías desde el primer instante; el JS las hace girar hasta formar el texto de data-text -->
-      <div class="board" id="board" role="img" aria-label="Vuelo VL 23, pasajera Vale, embarcando">
+      <div class="board" id="board" role="img" aria-label="Vuelo VL 23, destino tus sueños, abordando">
         <span class="board-label">vuelo</span>
         <div class="board-cells" data-text="VL 23"><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span></div>
-        <span class="board-label">pasajera</span>
-        <div class="board-cells" data-text="VALE"><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span></div>
+        <span class="board-label">destino</span>
+        <div class="board-cells" data-text="TUS SUEÑOS"><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span></div>
         <span class="board-label">estado</span>
-        <div class="board-cells board-status" data-text="EMBARCANDO"><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span></div>
+        <div class="board-cells board-status" data-text="ABORDANDO"><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span></div>
       </div>
     </div>
   </div>
@@ -981,7 +981,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* tablero de aeropuerto: cada paleta gira letras al azar y se detiene de izquierda
-   a derecha, fila por fila; al terminar, "EMBARCANDO" parpadea y se pasa al regalo */
+   a derecha, fila por fila; al terminar, "ABORDANDO" parpadea y se pasa al regalo */
 function runBoard(done){
   const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   const board = document.getElementById('board');
@@ -992,7 +992,7 @@ function runBoard(done){
     row.querySelectorAll('.flap').forEach((el, c) => {
       const ch = text[c] || ' ';
       if (ch === ' ') return;
-      const stopAt = 300 + r * 450 + c * 90 + Math.random() * 120;
+      const stopAt = 300 + r * 600 + c * 120 + Math.random() * 150;
       lastStop = Math.max(lastStop, stopAt);
       const spin = setInterval(() => {
         el.textContent = CHARS[Math.floor(Math.random() * CHARS.length)];
@@ -1001,10 +1001,11 @@ function runBoard(done){
       setTimeout(() => { clearInterval(spin); el.textContent = ch; flip(el); }, stopAt);
     });
   });
+  // ya formado, queda quieto 3 s para que se alcance a leer
   setTimeout(() => {
     board.classList.add('blink');
     setTimeout(done, 1400);
-  }, lastStop + 300);
+  }, lastStop + 3000);
 }
 
 giftBtn.addEventListener('mouseenter', () => { if (!giftBox.classList.contains('opening')) giftBox.classList.add('wiggle'); });
@@ -1158,7 +1159,7 @@ const passDate = '20 NOV';
 
 boardingPass.innerHTML = `
   <div class="pass-main">
-    <div class="pass-head"><span class="pass-brand">AEROLÍNEA LA CAPITANA</span><span class="pass-kind">pase de embarque</span></div>
+    <div class="pass-head"><span class="pass-brand">AEROLÍNEA LA CAPITANA</span><span class="pass-kind">pase de abordar</span></div>
     <div class="pass-route">
       ${planeSVG(30, undefined, undefined, 45)}
       <div class="pass-end"><span class="pass-label">destino</span><span class="pass-code">TODO LO QUE SUEÑAS</span></div>
@@ -1172,7 +1173,7 @@ boardingPass.innerHTML = `
   </div>
   <div class="pass-stub">
     ${passField('fecha', passDate)}
-    ${passField('embarque', 'AHORA')}
+    ${passField('abordaje', 'AHORA')}
     ${barcodeSVG('VALE-VL23-23A-CAPITANA')}
   </div>`;
 
