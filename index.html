@@ -69,11 +69,29 @@ button{font-family:inherit}
 .stage{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:5;
   opacity:0;animation:vFadeIn var(--dur) var(--ease-in) forwards}
 .kicker-sm{font-family:'Space Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.3em;text-transform:uppercase;margin-bottom:28px;color:var(--pink-soft);font-weight:700}
-.pulse-ring{width:96px;height:96px;border-radius:50%;background:rgba(255,92,157,.12);border:1.5px solid rgba(255,92,157,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 26px;animation:vPulse 1.6s ease-in-out infinite}
-.intro-text{font-family:'Space Mono',ui-monospace,monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-2);opacity:.9;animation:vFadeIn 1s .4s var(--ease-in) both}
+/* ---------- intro: tablero de salidas de aeropuerto ---------- */
+.board{display:inline-grid;grid-template-columns:auto auto;gap:12px 16px;align-items:center;padding:20px 22px;border-radius:14px;text-align:left;
+  background:rgba(10,2,8,.55);box-shadow:inset 0 0 0 1px rgba(255,143,196,.2);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.board-label{font-family:'Space Mono',ui-monospace,monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,217,232,.55)}
+.board-cells{display:flex;gap:3px}
+.flap{position:relative;width:clamp(20px,5.6vw,26px);height:clamp(30px,8.2vw,38px);border-radius:4px;display:flex;align-items:center;justify-content:center;
+  font-family:'Space Mono',ui-monospace,monospace;font-weight:700;font-size:clamp(15px,4.2vw,20px);line-height:1;color:var(--text);
+  background:linear-gradient(180deg,#2c0f24 0 50%,#210a1b 50% 100%);box-shadow:0 2px 4px rgba(0,0,0,.45)}
+/* la línea del medio de cada paleta */
+.flap::after{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(0,0,0,.6)}
+.flap.tick{animation:vFlap 70ms linear}
+@keyframes vFlap{50%{transform:scaleY(.55)}}
+.board-status .flap{color:var(--pink-soft)}
+.board.blink .board-status{animation:vBlink .5s steps(1) 2}
+@keyframes vBlink{50%{opacity:.15}}
+@media (max-width:420px){
+  .board{grid-template-columns:auto;gap:6px;padding:16px}
+  .board-cells{margin-bottom:6px}
+}
 
 .gift-head{text-align:center;margin-bottom:34px}
-.gift-title{font-family:'Anton','Bebas Neue',Impact,sans-serif;font-size:clamp(28px,4.5vw,52px);line-height:1.15;color:var(--pink-soft);text-shadow:var(--shade);white-space:nowrap}
+.gift-title{font-family:'Playfair Display',Georgia,serif;font-weight:400;font-size:clamp(36px,7vw,60px);line-height:1.1;letter-spacing:-.02em;color:var(--text);text-shadow:var(--shade);white-space:nowrap}
+.gift-title em{font-style:italic;color:var(--pink-light)}
 .gift-sub{font-family:'Space Mono',ui-monospace,monospace;font-size:12px;letter-spacing:.24em;text-transform:uppercase;margin-top:18px;color:var(--text-2);opacity:.9}
 .gift-btn{background:transparent;border:none;padding:16px;cursor:pointer;transition:transform 300ms cubic-bezier(.2,.9,.2,1.1),opacity 300ms ease;position:relative;z-index:2}
 .gift-btn.diving{pointer-events:none}
@@ -194,7 +212,6 @@ button{font-family:inherit}
 
 /* ---------- animaciones ---------- */
 @keyframes vFadeIn{from{opacity:0}to{opacity:1}}
-@keyframes vPulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(255,92,157,.5)}50%{transform:scale(1.08);box-shadow:0 0 0 24px rgba(255,92,157,0)}}
 @keyframes vFloat{0%,100%{transform:translateY(0) rotate(0);opacity:.35}50%{transform:translateY(-26px) rotate(8deg);opacity:.85}}
 @keyframes vGiftPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,92,157,.45)}50%{box-shadow:0 0 0 40px rgba(255,92,157,0)}}
 @keyframes vFadeInUp{from{opacity:0;transform:translateY(40px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
@@ -245,14 +262,21 @@ button{font-family:inherit}
   <div class="stage" id="stageIntro">
     <div style="text-align:center">
       <div class="kicker-sm">Para Vale</div>
-      <div class="pulse-ring" id="pulseRing"></div>
-      <div class="intro-text">preparando tu vuelo...</div>
+      <!-- casillas vacías desde el primer instante; el JS las hace girar hasta formar el texto de data-text -->
+      <div class="board" id="board" role="img" aria-label="Vuelo VL 23, pasajera Vale, embarcando">
+        <span class="board-label">vuelo</span>
+        <div class="board-cells" data-text="VL 23"><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span></div>
+        <span class="board-label">pasajera</span>
+        <div class="board-cells" data-text="VALE"><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span></div>
+        <span class="board-label">estado</span>
+        <div class="board-cells board-status" data-text="EMBARCANDO"><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span><span class="flap"></span></div>
+      </div>
     </div>
   </div>
 
   <div class="stage" id="stageGift" hidden>
     <div class="gift-head" id="giftHead">
-      <div class="gift-title" id="giftTitle">tienes un regalo</div>
+      <div class="gift-title" id="giftTitle">Tienes un <em>regalo</em></div>
       <div class="gift-sub" id="giftSub">toca para abrir</div>
     </div>
     <button class="gift-btn" id="giftBtn">
@@ -950,12 +974,38 @@ document.addEventListener('DOMContentLoaded', () => {
   catch (err) { console.error('No se pudo armar la nube de puntos del avión:', err); }
   try { lilyContourPoints = buildLilyContourPoints(); }
   catch (err) { console.error('No se pudo armar el contorno de partículas del lirio:', err); }
-  document.getElementById('pulseRing').innerHTML = strawberrySVG(40);
-  setTimeout(() => {
+  runBoard(() => {
     stageIntro.hidden = true;
     stageGift.hidden = false;
-  }, 2600);
+  });
 });
+
+/* tablero de aeropuerto: cada paleta gira letras al azar y se detiene de izquierda
+   a derecha, fila por fila; al terminar, "EMBARCANDO" parpadea y se pasa al regalo */
+function runBoard(done){
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const board = document.getElementById('board');
+  const flip = el => { el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick'); };
+  let lastStop = 0;
+  board.querySelectorAll('.board-cells').forEach((row, r) => {
+    const text = row.dataset.text;
+    row.querySelectorAll('.flap').forEach((el, c) => {
+      const ch = text[c] || ' ';
+      if (ch === ' ') return;
+      const stopAt = 300 + r * 450 + c * 90 + Math.random() * 120;
+      lastStop = Math.max(lastStop, stopAt);
+      const spin = setInterval(() => {
+        el.textContent = CHARS[Math.floor(Math.random() * CHARS.length)];
+        flip(el);
+      }, 75);
+      setTimeout(() => { clearInterval(spin); el.textContent = ch; flip(el); }, stopAt);
+    });
+  });
+  setTimeout(() => {
+    board.classList.add('blink');
+    setTimeout(done, 1400);
+  }, lastStop + 300);
+}
 
 giftBtn.addEventListener('mouseenter', () => { if (!giftBox.classList.contains('opening')) giftBox.classList.add('wiggle'); });
 giftBtn.addEventListener('mouseleave', () => giftBox.classList.remove('wiggle'));
